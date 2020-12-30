@@ -2,12 +2,16 @@ package com.didimdol.myhome.controller;
 
 import com.didimdol.myhome.model.Board;
 import com.didimdol.myhome.repository.BoardRepository;
+import com.didimdol.myhome.service.BoardService;
 import com.didimdol.myhome.validator.BoardValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -24,8 +28,12 @@ public class BoardController {
     private BoardRepository boardRepository;
 
     @Autowired
+    private BoardService boardService;
+
+    @Autowired
     private BoardValidator boardValidator;
 
+    @Secured("ROLE_USER")
     @GetMapping("/list")
     public String list(Model model, @PageableDefault(size = 2) Pageable pageable,
                        @RequestParam(required = false, defaultValue = ""    ) String searchText) {
@@ -53,13 +61,15 @@ public class BoardController {
 
     @PostMapping("/form")
 //    public String formSubmit(@ModelAttribute Board board) {
-    public String formSubmit(@Valid Board board, BindingResult bindingResult) { // Model 에 Valid Check 할 경우
+    public String form(@Valid Board board, BindingResult bindingResult, Authentication authentication) { // Model 에 Valid Check 할 경우
         boardValidator.validate(board, bindingResult);
+
         if (bindingResult.hasErrors()) {
             return "board/form";
         }
-
-        boardRepository.save(board);
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        boardService.save(username, board);
         return "redirect:/board/list";
     }
 }

@@ -1,8 +1,10 @@
 package com.didimdol.myhome.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -15,6 +17,7 @@ public class Role {
 
     String name;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "roles")
-    private List<User> users;
+    private List<User> users = new ArrayList<>();
 }

@@ -2,6 +2,7 @@ package com.didimdol.myhome.api;
 
 import com.didimdol.myhome.model.Board;
 import com.didimdol.myhome.repository.BoardRepository;
+import com.didimdol.myhome.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.thymeleaf.util.StringUtils;
@@ -37,7 +38,6 @@ public class BoardApiController {
 
     @GetMapping("/boards/{id}")
     Board one(@PathVariable Long id) {
-
         return repository.findById(id).orElse(null);
     }
 
